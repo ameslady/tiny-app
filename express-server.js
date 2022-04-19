@@ -45,6 +45,12 @@ app.get("/urls/new", (req, res) => {
   res.render("urls-new");
 });
 
+// updates an existing resource in url database to a new url
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("/urls");
+});
+
 // redirects to the long url based on the short url
 app.get("/u/:shortURL", (req, res) => {
   res.redirect(urlDatabase[req.params.shortURL]);
