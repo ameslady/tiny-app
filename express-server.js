@@ -25,25 +25,30 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// renders an index of all urls in the url database
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls-index", templateVars);
 });
 
+// adds a new url to the database and generates a new short url
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   urlDatabase[generateRandomString()] = req.body.longURL;
   res.send("Ok"); // Respond with 'Ok' (we will replace this);
 });
 
+// renders the new url submission page
 app.get("/urls/new", (req, res) => {
   res.render("urls-new");
 });
 
+// redirects to the long url based on the short url 
 app.get("/u/:shortURL", (req, res) => {
   res.redirect(urlDatabase[req.params.shortURL]);
 });
 
+// lists the short url and its corrisponding long url
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls-show", templateVars);
