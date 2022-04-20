@@ -53,6 +53,7 @@ const emailLookup = function(email) {
   return false;
 };
 
+// checks for the correct password
 const validPassword = function(password) {
   for (const id in users) {
     if (users[id].password === password) {
@@ -64,7 +65,6 @@ const validPassword = function(password) {
 
 /* REQUESTS */
 
-// {description needed}
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -168,7 +168,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-// clears username cookie and redirects back to /urls
+// clears user_id cookie and redirects back to /urls
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls");
