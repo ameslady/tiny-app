@@ -63,7 +63,7 @@ const validPassword = function(password) {
   return false;
 };
 
-/* REQUESTS */
+/* ROUTES */
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
