@@ -73,10 +73,10 @@ app.get("/u/:shortURL", (req, res) => {
 
 // lists the short url and its corrisponding long url
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { 
+  const templateVars = {
     username: req.cookies.username,
-    shortURL: req.params.shortURL, 
-    longURL: urlDatabase[req.params.shortURL] 
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
   };
   res.render("urls-show", templateVars);
 });
