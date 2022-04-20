@@ -31,18 +31,6 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-// sets the username cookie and redirects back to /urls
-app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect("/urls");
-});
-
-// clears username cookie and redirects back to /urls
-app.post("/logout", (req, res) => {
-  res.clearCookie("username");
-  res.redirect("/urls");
-});
-
 // renders an index of all urls in the url database
 app.get("/urls", (req, res) => {
   const templateVars = { username: req.cookies.username, urls: urlDatabase };
@@ -85,6 +73,23 @@ app.get("/urls/:shortURL", (req, res) => {
 // deletes an existing url from the urlDatabase object
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
+
+// renders registration page
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+// sets the username cookie and redirects back to /urls
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect("/urls");
+});
+
+// clears username cookie and redirects back to /urls
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
   res.redirect("/urls");
 });
 
