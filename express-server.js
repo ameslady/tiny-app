@@ -1,23 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-const app = express();
-const port = 8080;
 
+const app = express();
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-function generateRandomString() {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
-
+const port = 8080;
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
@@ -25,6 +15,18 @@ const urlDatabase = {
   "xCdPoi": "http://netflix.com",
 };
 
+// generates a random short URL
+const generateRandomString = function() {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
+
+// ROUTERS
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -47,11 +49,10 @@ app.get("/urls", (req, res) => {
   res.render("urls-index", templateVars);
 });
 
-// adds a new url to the database and generates a new short url
+// adds a new url value to the database with a generated short url key
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
   urlDatabase[generateRandomString()] = req.body.longURL;
-  res.redirect("/urls"); // Respond with 'Ok' (we will replace this);
+  res.redirect("/urls"); 
 });
 
 // renders the new url submission page
@@ -66,12 +67,12 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-// redirects to the long url based on the short url
+// redirects to the resource url based on the short url
 app.get("/u/:shortURL", (req, res) => {
   res.redirect(urlDatabase[req.params.shortURL]);
 });
 
-// lists the short url and its corrisponding long url
+// renders url edit page
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     username: req.cookies.username,
@@ -81,7 +82,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls-show", templateVars);
 });
 
-// deletes a url key:value from the database
+// deletes an existing url from the urlDatabase object
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
@@ -90,22 +91,3 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
-
-
-// Potentially not needed:
-// app.get("/", (req, res) => {
-//   res.send("Hello!");
-// });
-
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
-
-// app.get("/set", (req, res) => {
-//   const a = 1;
-//   res.send(`a = ${a}`);
-//  });
- 
-//  app.get("/fetch", (req, res) => {
-//   res.send(`a = ${a}`);
-//  });
