@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const { render } = require("express/lib/response");
 
 /* {ADD HEADING HERE} */
 
@@ -135,6 +136,11 @@ app.post("/register", (req, res) => {
   }
   res.redirect("/urls");
 });
+
+// renders the login page
+app.get("/login", (req, res) => {
+  res.render("login");
+})
 
 // sets the username cookie and redirects back to /urls
 app.post("/login", (req, res) => {
