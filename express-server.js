@@ -29,11 +29,13 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// sets the username cookie and redirects back to /urls
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect("/urls");
 });
 
+// clears username cookie and redirects back to /urls
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
@@ -79,6 +81,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls-show", templateVars);
 });
 
+// deletes a url key:value from the database
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
