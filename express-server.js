@@ -53,6 +53,15 @@ const emailLookup = function(email) {
   return false;
 };
 
+const validPassword = function(password) {
+  for (const id in users) {
+    if (users[id].password === password) {
+      return true;
+    }
+  }
+  return false;
+};
+
 /* REQUESTS */
 
 // {description needed}
@@ -62,7 +71,6 @@ app.get("/urls.json", (req, res) => {
 
 // renders an index of all urls in the url database
 app.get("/urls", (req, res) => {
-  console.log(users);
   const user_id = req.cookies["user_id"];
   const templateVars = { user: users[user_id], urls: urlDatabase };
   res.render("urls-index", templateVars);
@@ -120,7 +128,7 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
 
   if (!email || !password){
-    res.status(400).send('Password and email are required.')
+    res.status(400).send('Password and email are required to register.')
   } else {
     if (emailLookup(email)) {
       res.status(400).send('User already exists.')
@@ -142,10 +150,22 @@ app.get("/login", (req, res) => {
   res.render("login");
 })
 
-// sets the username cookie and redirects back to /urls
+// checks for an existing user and logs them in
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!email || !password){
+    res.status(400).send('Password and email are required to login.')
+  } else {
+    if (!emailLookup(email) || !validPassword(password)) {
+      res.status(403).send('Invalid credentials.')
+    } else {
+      const user_id = Object.keys(users).find(key => users[key].email === email);
+      res.cookie('user_id', user_id)
+      res.redirect("/urls");
+    }
+  }
 });
 
 // clears username cookie and redirects back to /urls
