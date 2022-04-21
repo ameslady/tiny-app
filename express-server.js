@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 const { render } = require("express/lib/response"); // what is dis?
 
 /* {ADD HEADING HERE} */
@@ -40,7 +41,7 @@ const users = {
   "yHko9F": {
     id: "yHko9F", 
     email: "amy@test.com", 
-    password: "test"
+    password: '$2a$10$8SmUevZlhV2p1GxFM5mw/.j98UFF3LHQCdQAM3I2Hx.SzM4eQQaV.'
   }
 }
 
@@ -58,19 +59,9 @@ const generateRandomString = function() {
 };
 
 // checks if an email already exists in users
-const emailLookup = function(email) {
+const emailExists = function(email) {
   for (const id in users) {
     if (users[id].email === email) {
-      return true;
-    }
-  }
-  return false;
-};
-
-// checks for the correct password - refactor this into emailLookup
-const validPassword = function(password) {
-  for (const id in users) {
-    if (users[id].password === password) {
       return true;
     }
   }
@@ -102,6 +93,7 @@ app.get("/urls.json", (req, res) => {
 
 // renders an index of all urls in the url database
 app.get("/urls", (req, res) => {
+  console.log(users);
   const user_id = req.cookies["user_id"];
 
   if (!user_id) {
@@ -112,7 +104,7 @@ app.get("/urls", (req, res) => {
   }
 });
 
-// if logged in, adds a new url value to the database with a generated short url key
+// adds a new url value to the database with a generated short url key
 app.post("/urls", (req, res) => {
   const user_id = req.cookies["user_id"];
 
@@ -127,10 +119,10 @@ app.post("/urls", (req, res) => {
   }
 });
 
-// if logged in, renders the new url submission page
+// renders the new url submission page
 app.get("/urls/new", (req, res) => {
   const user_id = req.cookies["user_id"]; 
-  const templateVars = { user: users[user_id] };
+  const templateVars = { user: users[user_id] }; // do these need to be sent?
 
   if (!user_id) {
     res.redirect("/login");
@@ -142,9 +134,9 @@ app.get("/urls/new", (req, res) => {
 // updates an existing resource in url database to a new url
 app.post("/urls/:id", (req, res) => {
   const user_id = req.cookies["user_id"];
-  const editor = urlDatabase[req.params.id].userID;
+  const creator = urlDatabase[req.params.id].userID;
 
-  if (user_id !== editor) {
+  if (user_id !== creator) {
     res.status(401).send('Not authorized to edit this URL.');
   } else {
     urlDatabase[req.params.id] = {
@@ -157,7 +149,7 @@ app.post("/urls/:id", (req, res) => {
 
 // redirects to the resource url based on the short url (change to)
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = new URL(urlDatabase[req.params.shortURL].longURL);
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -166,12 +158,12 @@ app.get("/urls/:shortURL", (req, res) => {
   const user_id = req.cookies["user_id"]; 
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  const editor = urlDatabase[req.params.shortURL].userID;
+  const creator = urlDatabase[req.params.shortURL].userID;
 
   if (!user_id) {
     res.redirect("/login");
   } else {
-    if (user_id !== editor) {
+    if (user_id !== creator) {
       res.status(401).send('Not authorized to show this URL.');
     } else {
       const templateVars = {
@@ -187,9 +179,9 @@ app.get("/urls/:shortURL", (req, res) => {
 // deletes an existing url from the urlDatabase object
 app.post("/urls/:shortURL/delete", (req, res) => {
   const user_id = req.cookies["user_id"];
-  const editor = urlDatabase[req.params.shortURL].userID;
+  const creator = urlDatabase[req.params.shortURL].userID;
 
-  if (user_id !== editor) {
+  if (user_id !== creator) {
     res.status(401).send('Not authorized to delete this URL.');
   } else {
     delete urlDatabase[req.params.shortURL];
@@ -206,18 +198,19 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPW = bcrypt.hashSync(password, 10);
 
   if (!email || !password){
     res.status(400).send('Password and email are required to register.')
   } else {
-    if (emailLookup(email)) {
+    if (emailExists(email)) {
       res.status(400).send('User already exists.')
     } else {
       const randomId = generateRandomString();
       users[randomId] = {
         id: randomId,
         email: email,
-        password: password
+        password: hashedPW
       }
       res.cookie('user_id', randomId);
       res.redirect("/urls");
@@ -234,14 +227,14 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const user_id = Object.keys(users).find(key => users[key].email === email);
 
   if (!email || !password){
     res.status(400).send('Password and email are required to login.')
   } else {
-    if (!emailLookup(email) || !validPassword(password)) {
+    if (!emailExists(email) || !bcrypt.compareSync(password, users[user_id].password)) {
       res.status(403).send('Invalid credentials.')
     } else {
-      const user_id = Object.keys(users).find(key => users[key].email === email);
       res.cookie('user_id', user_id)
       res.redirect("/urls");
     }
