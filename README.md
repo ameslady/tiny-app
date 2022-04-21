@@ -21,7 +21,8 @@ Stretch:
 
 Extra:
 * Make tinyapp's front-end pretty
-  * Add icons and footer
+  * Add icons
+  * Create footer ✅ 
 
 
 # Questions
