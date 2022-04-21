@@ -17,12 +17,12 @@ app.use(cookieParser());
 
 const port = 8080;
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.lighthouselabs.ca",
-  "TuYgsb": "http://youtube.com",
-  "xCdPoi": "http://netflix.com",
-};
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.lighthouselabs.ca",
+//   "TuYgsb": "http://youtube.com",
+//   "xCdPoi": "http://netflix.com",
+// };
 
 const urlDatabaseRefactored = {
   b2xVn2: {
@@ -142,7 +142,6 @@ app.post("/urls/:id", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const longURL = new URL(urlDatabaseRefactored[req.params.shortURL].longURL);
   res.redirect(longURL);
-
 });
 
 // renders url edit page
