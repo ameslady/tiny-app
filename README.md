@@ -7,7 +7,7 @@ A full stack web app built with Node and Express that allows users to shorten lo
 
 Core:
 * Use cookie.session (encryption) for registration/login functionality
-* use bycrypt for password security
+* use bycrypt for password security  ✅
 * Move functions into helpers file and import
 * Review all requirements and thoroughly test application
 * Update res.status errors to redirect to an error page template w/ header
