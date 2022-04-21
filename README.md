@@ -21,6 +21,7 @@ Final tid bits:
 * Ensure comments are descriptive and not redundant
 * Refactor code
 * Make tinyapp's front-end pretty
+  * Add icons and footer
 
 
 # Questions
