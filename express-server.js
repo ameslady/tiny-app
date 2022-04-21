@@ -16,12 +16,33 @@ app.use(cookieParser());
 /* GLOBAL VARIABLES */
 
 const port = 8080;
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  "9sm5xK": "http://www.lighthouselabs.ca",
   "TuYgsb": "http://youtube.com",
   "xCdPoi": "http://netflix.com",
 };
+
+const urlDatabaseRefactored = {
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "yHko9F"
+  },
+  i3BoGr: {
+      longURL: "https://www.google.ca",
+      userID: "yHko9F"
+  },
+  TuYgsb: {
+    longURL: "http://youtube.com",
+    userID: "yHko9F"
+  },
+  xCdPoi: {
+    longURL: "http://netflix.com",
+    userID: "yHko9F"
+  },
+};
+
 const users = { 
   "yHko9F": {
     id: "yHko9F", 
@@ -65,55 +86,83 @@ const validPassword = function(password) {
 
 /* ROUTES */
 
+// what is this even doing?
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  res.json(urlDatabaseRefactored);
 });
 
 // renders an index of all urls in the url database
 app.get("/urls", (req, res) => {
+  console.log(urlDatabaseRefactored);
   const user_id = req.cookies["user_id"];
-  const templateVars = { user: users[user_id], urls: urlDatabase };
+  const templateVars = { user: users[user_id], urls: urlDatabaseRefactored };
   res.render("urls-index", templateVars);
 });
 
-// adds a new url value to the database with a generated short url key
+// if logged in, adds a new url value to the database with a generated short url key
 app.post("/urls", (req, res) => {
-  urlDatabase[generateRandomString()] = req.body.longURL;
-  res.redirect("/urls"); 
+  const user_id = req.cookies["user_id"];
+
+  if (!user_id) {
+    res.status(401).send('Not authorized to create a new short URL.')
+  } else {
+    urlDatabaseRefactored[generateRandomString()] = {
+      longURL: req.body.longURL,
+      userID: user_id
+    };
+    res.redirect("/urls"); 
+  }
 });
 
-// renders the new url submission page
+// if logged in, renders the new url submission page
 app.get("/urls/new", (req, res) => {
   const user_id = req.cookies["user_id"]; 
   const templateVars = { user: users[user_id] };
-  res.render("urls-new", templateVars);
+
+  if (!user_id) {
+    res.redirect("/login");
+  } else {
+    res.render("urls-new", templateVars);
+  }
 });
 
 // updates an existing resource in url database to a new url
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  const user_id = req.cookies["user_id"];
+
+  urlDatabaseRefactored[req.params.id] = {
+    longURL: req.body.longURL,
+    userID: user_id
+  };
+
   res.redirect("/urls");
 });
 
 // redirects to the resource url based on the short url
 app.get("/u/:shortURL", (req, res) => {
-  res.redirect(urlDatabase[req.params.shortURL]);
+  const longURL = new URL(urlDatabaseRefactored[req.params.shortURL].longURL);
+  res.redirect(longURL);
+
 });
 
 // renders url edit page
 app.get("/urls/:shortURL", (req, res) => {
   const user_id = req.cookies["user_id"]; 
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabaseRefactored[req.params.shortURL].longURL;
+
   const templateVars = {
     user: users[user_id],
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    shortURL: shortURL,
+    longURL: longURL
   };
+  
   res.render("urls-show", templateVars);
 });
 
 // deletes an existing url from the urlDatabase object
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  delete urlDatabaseRefactored[req.params.shortURL];
   res.redirect("/urls");
 });
 
@@ -140,9 +189,9 @@ app.post("/register", (req, res) => {
         password: password
       }
       res.cookie('user_id', randomId);
+      res.redirect("/urls");
     }
   }
-  res.redirect("/urls");
 });
 
 // renders the login page
