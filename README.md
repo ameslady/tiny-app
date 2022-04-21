@@ -5,6 +5,12 @@ A full stack web app built with Node and Express that allows users to shorten lo
 
 # To-Do
 
-Finish "Anyone Can Visit Short URLs" task
+* Update res.status errors to redirect to an error template
 
-* Make sure they redirect for users, even if they aren't logged in. Verify that it does return HTML with a relevant error message if the id does not exist.
+
+# Questions
+
+* Should I be able to delete using the following commands if logged in, in the browser? Or, do I need to pass credentials w/ the commmand to get this to work?
+
+curl -X POST -i localhost:8080/urls/b2xVn2/delete
+
