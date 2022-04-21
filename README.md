@@ -6,6 +6,7 @@ A full stack web app built with Node and Express that allows users to shorten lo
 # To-Do
 
 * Update res.status errors to redirect to an error template
+* Use cookie.session for registration/login functionality
 
 
 # Questions
