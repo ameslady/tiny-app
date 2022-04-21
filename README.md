@@ -5,11 +5,22 @@ A full stack web app built with Node and Express that allows users to shorten lo
 
 # To-Do
 
-* Update res.status errors to redirect to an error template
+Core:
 * Use cookie.session for registration/login functionality (better security)
 * use bycrypt for password security
-* move functions into helpers file and import
-* make tinyapp pretty
+
+Stretch:
+
+* Method Override
+* Analytics
+
+Final tid bits:
+* Review all requirements and thoroughly test application
+* Update res.status errors to redirect to an error page template w/ header
+* Move functions into helpers file and import
+* Ensure comments are descriptive and not redundant
+* Refactor code
+* Make tinyapp's front-end pretty
 
 
 # Questions
