@@ -5,6 +5,6 @@ A full stack web app built with Node and Express that allows users to shorten lo
 
 # To-Do
 
-* Finish "Anyone Can Visit Short URLs" task
+Finish "Anyone Can Visit Short URLs" task
 
-Make sure they redirect for users, even if they aren't logged in. Verify that it does return HTML with a relevant error message if the id does not exist.
+* Make sure they redirect for users, even if they aren't logged in. Verify that it does return HTML with a relevant error message if the id does not exist.
