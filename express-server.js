@@ -35,7 +35,7 @@ const urlDatabaseRefactored = {
   },
   TuYgsb: {
     longURL: "http://youtube.com",
-    userID: "yHko9F"
+    userID: "test"
   },
   xCdPoi: {
     longURL: "http://netflix.com",
@@ -84,6 +84,17 @@ const validPassword = function(password) {
   return false;
 };
 
+const urlsForUser = function(id) {
+  const userUrls = {};
+
+  for (const url in urlDatabaseRefactored){
+    if (id === urlDatabaseRefactored[url].userID) {
+      userUrls[url] = urlDatabaseRefactored[url];
+    }
+  } 
+  return userUrls;
+};
+
 /* ROUTES */
 
 // what is this even doing?
@@ -95,8 +106,13 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   console.log(urlDatabaseRefactored);
   const user_id = req.cookies["user_id"];
-  const templateVars = { user: users[user_id], urls: urlDatabaseRefactored };
-  res.render("urls-index", templateVars);
+
+  if (!user_id) {
+    res.redirect("login");
+  } else {
+    const templateVars = { user: users[user_id], urls: urlsForUser(user_id)};
+    res.render("urls-index", templateVars);
+  }
 });
 
 // if logged in, adds a new url value to the database with a generated short url key
@@ -129,16 +145,20 @@ app.get("/urls/new", (req, res) => {
 // updates an existing resource in url database to a new url
 app.post("/urls/:id", (req, res) => {
   const user_id = req.cookies["user_id"];
+  const editor = urlDatabaseRefactored[req.params.id].userID;
 
-  urlDatabaseRefactored[req.params.id] = {
-    longURL: req.body.longURL,
-    userID: user_id
-  };
-
-  res.redirect("/urls");
+  if (user_id !== editor) {
+    res.status(401).send('Not authorized to edit this URL.');
+  } else {
+    urlDatabaseRefactored[req.params.id] = {
+      longURL: req.body.longURL,
+      userID: user_id
+    }; 
+    res.redirect("/urls");
+  }
 });
 
-// redirects to the resource url based on the short url
+// redirects to the resource url based on the short url (change to)
 app.get("/u/:shortURL", (req, res) => {
   const longURL = new URL(urlDatabaseRefactored[req.params.shortURL].longURL);
   res.redirect(longURL);
@@ -149,20 +169,38 @@ app.get("/urls/:shortURL", (req, res) => {
   const user_id = req.cookies["user_id"]; 
   const shortURL = req.params.shortURL;
   const longURL = urlDatabaseRefactored[req.params.shortURL].longURL;
+  const editor = urlDatabaseRefactored[req.params.shortURL].userID;
 
-  const templateVars = {
-    user: users[user_id],
-    shortURL: shortURL,
-    longURL: longURL
-  };
-  
-  res.render("urls-show", templateVars);
+  if (!user_id) {
+    res.redirect("/login");
+  } else {
+    if (user_id !== editor) {
+      res.status(401).send('Not authorized to show this URL.');
+    } else {
+      const templateVars = {
+        user: users[user_id],
+        shortURL: shortURL,
+        longURL: longURL
+      }; 
+      res.render("urls-show", templateVars);
+    }
+  }
 });
 
 // deletes an existing url from the urlDatabase object
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabaseRefactored[req.params.shortURL];
-  res.redirect("/urls");
+  const user_id = req.cookies["user_id"];
+  const editor = urlDatabaseRefactored[req.params.shortURL].userID;
+
+  console.log(user_id);
+  console.log(editor);
+
+  if (user_id !== editor) {
+    res.status(401).send('Not authorized to delete this URL.');
+  } else {
+    delete urlDatabaseRefactored[req.params.shortURL];
+    res.redirect("/urls");
+  }
 });
 
 // renders registration page
