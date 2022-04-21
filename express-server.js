@@ -3,7 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-const { render } = require("express/lib/response");
+const { render } = require("express/lib/response"); // what is dis?
 
 /* {ADD HEADING HERE} */
 
@@ -16,13 +16,6 @@ app.use(cookieParser());
 /* GLOBAL VARIABLES */
 
 const port = 8080;
-
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.lighthouselabs.ca",
-//   "TuYgsb": "http://youtube.com",
-//   "xCdPoi": "http://netflix.com",
-// };
 
 const urlDatabase = {
   b2xVn2: {
@@ -51,7 +44,7 @@ const users = {
   }
 }
 
-/* FUNCTIONS */ 
+/* FUNCTIONS - move to helper file */ 
 
 // generates a random short URL
 const generateRandomString = function() {
@@ -74,7 +67,7 @@ const emailLookup = function(email) {
   return false;
 };
 
-// checks for the correct password
+// checks for the correct password - refactor this into emailLookup
 const validPassword = function(password) {
   for (const id in users) {
     if (users[id].password === password) {
@@ -84,6 +77,7 @@ const validPassword = function(password) {
   return false;
 };
 
+// creates a new object with specific users urls
 const urlsForUser = function(id) {
   const userUrls = {};
 
@@ -95,7 +89,11 @@ const urlsForUser = function(id) {
   return userUrls;
 };
 
-/* ROUTES */
+/* ROUTES 
+* - remove redundant comments
+* - organized based on type of request (GET, POST, etc.)
+*/
+
 
 // what is this even doing?
 app.get("/urls.json", (req, res) => {
