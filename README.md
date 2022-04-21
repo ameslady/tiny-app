@@ -10,7 +10,7 @@ A full stack web app built with Node and Express that allows users to shorten lo
 
 # Questions
 
-* Should I be able to delete using the following commands if logged in, in the browser? Or, do I need to pass credentials w/ the commmand to get this to work?
+Should I be able to delete using the following commands if logged in, in the browser? Or, do I need to pass credentials w/ the commmand to get this to work?
 
-curl -X POST -i localhost:8080/urls/b2xVn2/delete
+* curl -X POST -i localhost:8080/urls/b2xVn2/delete
 
