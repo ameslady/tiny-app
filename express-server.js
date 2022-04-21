@@ -24,7 +24,7 @@ const port = 8080;
 //   "xCdPoi": "http://netflix.com",
 // };
 
-const urlDatabaseRefactored = {
+const urlDatabase = {
   b2xVn2: {
     longURL: "http://www.lighthouselabs.ca",
     userID: "yHko9F"
@@ -87,9 +87,9 @@ const validPassword = function(password) {
 const urlsForUser = function(id) {
   const userUrls = {};
 
-  for (const url in urlDatabaseRefactored){
-    if (id === urlDatabaseRefactored[url].userID) {
-      userUrls[url] = urlDatabaseRefactored[url];
+  for (const url in urlDatabase){
+    if (id === urlDatabase[url].userID) {
+      userUrls[url] = urlDatabase[url];
     }
   } 
   return userUrls;
@@ -99,12 +99,11 @@ const urlsForUser = function(id) {
 
 // what is this even doing?
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabaseRefactored);
+  res.json(urlDatabase);
 });
 
 // renders an index of all urls in the url database
 app.get("/urls", (req, res) => {
-  console.log(urlDatabaseRefactored);
   const user_id = req.cookies["user_id"];
 
   if (!user_id) {
@@ -122,7 +121,7 @@ app.post("/urls", (req, res) => {
   if (!user_id) {
     res.status(401).send('Not authorized to create a new short URL.')
   } else {
-    urlDatabaseRefactored[generateRandomString()] = {
+    urlDatabase[generateRandomString()] = {
       longURL: req.body.longURL,
       userID: user_id
     };
@@ -145,12 +144,12 @@ app.get("/urls/new", (req, res) => {
 // updates an existing resource in url database to a new url
 app.post("/urls/:id", (req, res) => {
   const user_id = req.cookies["user_id"];
-  const editor = urlDatabaseRefactored[req.params.id].userID;
+  const editor = urlDatabase[req.params.id].userID;
 
   if (user_id !== editor) {
     res.status(401).send('Not authorized to edit this URL.');
   } else {
-    urlDatabaseRefactored[req.params.id] = {
+    urlDatabase[req.params.id] = {
       longURL: req.body.longURL,
       userID: user_id
     }; 
@@ -160,7 +159,7 @@ app.post("/urls/:id", (req, res) => {
 
 // redirects to the resource url based on the short url (change to)
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = new URL(urlDatabaseRefactored[req.params.shortURL].longURL);
+  const longURL = new URL(urlDatabase[req.params.shortURL].longURL);
   res.redirect(longURL);
 });
 
@@ -168,8 +167,8 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const user_id = req.cookies["user_id"]; 
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabaseRefactored[req.params.shortURL].longURL;
-  const editor = urlDatabaseRefactored[req.params.shortURL].userID;
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  const editor = urlDatabase[req.params.shortURL].userID;
 
   if (!user_id) {
     res.redirect("/login");
@@ -190,15 +189,12 @@ app.get("/urls/:shortURL", (req, res) => {
 // deletes an existing url from the urlDatabase object
 app.post("/urls/:shortURL/delete", (req, res) => {
   const user_id = req.cookies["user_id"];
-  const editor = urlDatabaseRefactored[req.params.shortURL].userID;
-
-  console.log(user_id);
-  console.log(editor);
+  const editor = urlDatabase[req.params.shortURL].userID;
 
   if (user_id !== editor) {
     res.status(401).send('Not authorized to delete this URL.');
   } else {
-    delete urlDatabaseRefactored[req.params.shortURL];
+    delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   }
 });
