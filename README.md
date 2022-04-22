@@ -27,7 +27,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 # To-Do
 
-* Method Override
-* Analytics
+* Method Override (stretch)
+* Analytics (stretch)
 * Update res.status errors to redirect to an error page template w/ header
 * Add an favicon
