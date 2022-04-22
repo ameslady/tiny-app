@@ -34,10 +34,6 @@ const users = {
 
 /* GET ROUTES */
 
-// app.get("/urls.json", (req, res) => { // is this needed?
-//   res.json(urlDatabase);
-// });
-
 // renders an index of urls for the logged in user
 app.get("/urls", (req, res) => {
   const userID = req.session.userID;
