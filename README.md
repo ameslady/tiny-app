@@ -9,6 +9,7 @@ Core:
 * Use cookie.session (encryption) for registration/login functionality ✅
 * use bycrypt for password security  ✅
 * Move functions into helpers file and import ✅
+* Implemented unit tests ✅
 
 Stretch:
 
@@ -26,7 +27,8 @@ Final tid-bits:
 
 # Questions
 
-Should I be able to delete using the following commands if logged in, in the browser? Or, do I need to pass credentials w/ the commmand to get this to work?
+Should I be able to delete or edit using the following commands if logged in in the browser? 
+Or, do I need to pass credentials w/ these commmands to get it this to work?
 
 * curl -X POST -i localhost:8080/urls/b2xVn2/delete
-
+* curl -X POST -i localhost:8080/urls/b2xVn2
