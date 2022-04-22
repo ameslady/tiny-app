@@ -13,7 +13,7 @@
       <div class="navbar-nav ml-auto">
         <% if (typeof user !== 'undefined') { %>
           <form method="POST" action="/logout" style="display:flex">
-            <p style=" margin: auto; margin-right: 1em"> Welcome,  <strong><%= user.email %></strong>!</p>
+            <p style=" margin: auto; margin-right: 1em; color:white;"> Welcome,  <strong><%= user.email %></strong>!</p>
             <button type="submit" class="btn btn-outline-light">Logout</button>
           </form>  
         <% } else { %>
