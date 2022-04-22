@@ -20,12 +20,12 @@ const getUserByEmail = function(email, users) {
 };
 
 // creates a new object with specific users urls
-const urlsForUser = function(id, urlDatabase) {
+const urlsForUser = function(id, database) {
   const userUrls = {};
 
-  for (const url in urlDatabase){
-    if (id === urlDatabase[url].userID) {
-      userUrls[url] = urlDatabase[url];
+  for (const url in database){
+    if (id === database[url].userID) {
+      userUrls[url] = database[url];
     }
   } 
   return userUrls;
